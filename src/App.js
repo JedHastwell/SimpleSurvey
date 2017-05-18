@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import './App.css';
+import $ from 'jquery';
 
 var uuid = require('uuid');
 var firebase = require('firebase');
@@ -22,16 +23,28 @@ class App extends Component {
     this.state = {
       id:uuid.v1(),
       name: '',
-      answers: {
-        q1:'',
-        q2:'',
-        q3:'',
-        q4:''
-      },
+      survey: null,
+      answers: {},
       submitted: false
     }
 
     this.handleQuestionChange = this.handleQuestionChange.bind(this);
+    this.getSurveyQuestions.bind(this)();
+  }
+
+  getSurveyQuestions(){
+    $.ajax({
+      url: 'http://localhost:3000/questions.json',
+      dataType: 'json',
+      cache: false,
+      success: function(data) {
+        this.setState({survey: data});
+      }.bind(this),
+      error: function(xhr, status, err) {
+        console.log(err);
+        alert(err);
+      }
+    });
   }
 
   handleNameSubmit(event){
@@ -67,37 +80,38 @@ class App extends Component {
 
     var user;
     var questions;
+    var survey = this.state.survey;
+    var display = '';
+    var onChange = this.handleQuestionChange;
 
     if(this.state.name && this.state.submitted === false) {
+
+      if(survey){
+        display = survey.questions.map(function(item) {
+          return (
+            <div>
+              <label key={item.qid}>{item.question}</label><br />
+              { item.answers.map(function(ans) {
+                  return (
+                    <span key={ans}>
+                      <input type="radio" name={item.qid} value={ans} onChange={onChange} />{ans} <br />
+                    </span>
+                  );
+                })
+              }
+            </div>
+          );
+        });
+      }
+
       user = (<h2> Welcome {this.state.name} </h2>);
       questions = (
         <span>
           <h3>Survey Questions</h3>
           <form onSubmit={this.handleQuestionSubmit.bind(this)}>
-            <div>
-              <label>What is your favorite desktop operating system?</label><br />
-              <input type="radio" name="q1" value="Windows" onChange={this.handleQuestionChange} />Windows <br />
-              <input type="radio" name="q1" value="MacOS" onChange={this.handleQuestionChange} />MacOS <br />
-              <input type="radio" name="q1" value="Linux" onChange={this.handleQuestionChange} />Linux <br />
-              <input type="radio" name="q1" value="Solaris" onChange={this.handleQuestionChange} />Solaris <br />
-              <input type="radio" name="q1" value="Other" onChange={this.handleQuestionChange} />Other <br />
-            </div>
-            <div>
-              <label>What is your favorite brand of TV?</label><br />
-              <input type="radio" name="q2" value="Sony" onChange={this.handleQuestionChange} />Sony <br />
-              <input type="radio" name="q2" value="Samsung" onChange={this.handleQuestionChange} />Samsung <br />
-              <input type="radio" name="q2" value="Panasonic" onChange={this.handleQuestionChange} />Panasonic <br />
-              <input type="radio" name="q2" value="Visio" onChange={this.handleQuestionChange} />Visio <br />
-              <input type="radio" name="q2" value="Other" onChange={this.handleQuestionChange} />Other <br />
-            </div>
-            <div>
-              <label>What is your favorite smartphone brand?</label><br />
-              <input type="radio" name="q3" value="Apple" onChange={this.handleQuestionChange} />Apple <br />
-              <input type="radio" name="q3" value="Samsung" onChange={this.handleQuestionChange} />Samsung <br />
-              <input type="radio" name="q3" value="HTC" onChange={this.handleQuestionChange} />HTC <br />
-              <input type="radio" name="q3" value="Huawei" onChange={this.handleQuestionChange} />Huawei <br />
-              <input type="radio" name="q3" value="Other" onChange={this.handleQuestionChange} />Other <br />
-            </div>
+
+            {display}
+
             <input type="submit" value="submit" />
           </form>
         </span>
@@ -111,7 +125,10 @@ class App extends Component {
       </span>
       questions = '';
     } else if(this.state.submitted === true) {
-
+      user = <span>
+        <h2>Thanks {this.state.name}</h2>
+        Your answers have been submitted.
+      </span>
     }
 
     return (

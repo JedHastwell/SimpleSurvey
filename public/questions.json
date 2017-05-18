@@ -1,0 +1,28 @@
+{
+  "questions": [
+    {
+      "qid": "q1",
+      "question": "What is your favorite desktop operating system?",
+      "type": "radio",
+      "answers": ["Windows", "MacOS", "Linux", "Solaris", "Other"]
+    },
+    {
+      "qid": "q2",
+      "question": "What is your favorite brand of digital camera?",
+      "type": "radio",
+      "answers": ["Canon", "Nikon", "Fuji", "Sony", "Other"]
+    },
+    {
+      "qid": "q3",
+      "question": "What is your favorite brand of TV?",
+      "type": "radio",
+      "answers": ["Sony", "Samsung", "Panasonic", "Visio", "Other"]
+    },
+    {
+      "qid": "q4",
+      "question": "What is your favorite brand of smartphone?",
+      "type": "radio",
+      "answers": ["Apple", "Samsung", "HTC", "Huawei", "LG", "Other"]
+    }
+  ]
+}
